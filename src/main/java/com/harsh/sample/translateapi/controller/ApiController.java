@@ -18,10 +18,7 @@ public class ApiController {
     public String translateRequest(@RequestBody String text){
     	Translate translate = TranslateOptions.builder().apiKey("AIzaSyCom4bHxaPIyqD4K30S1cJVB5CJWxciGjM").build().service();
 
-		// The text to translate
-//		String text = "Hello, world!";
-
-		// Translates some text into Russian
+		// Translates some text 
 		Translation translation = translate.translate(
 				text,
 				TranslateOption.sourceLanguage("en"),
@@ -38,10 +35,10 @@ public class ApiController {
     public String getTranslateRequest(@RequestParam String text){
     	Translate translate = TranslateOptions.builder().apiKey("AIzaSyCom4bHxaPIyqD4K30S1cJVB5CJWxciGjM").build().service();
 
-		// The text to translate
-//		String text = "Hello, world!";
-
-		// Translates some text into Russian
+		// Translates some text
+    	
+    	if(text.length() > 0) {
+    	text = text.replace("\"", "");
 		Translation translation = translate.translate(
 				text,
 				TranslateOption.sourceLanguage("en"),
@@ -52,5 +49,9 @@ public class ApiController {
 		System.out.printf("Translation: %s%n", translation.translatedText());
 		
 		return translation.translatedText();
+    	}
+    	else {
+    		return "Please provide the string in request.";
+    	}
     }
 }

@@ -14,6 +14,7 @@
 	<name>translateapi</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
+		<tomcat.version>8.5.63</tomcat.version>
 		<java.version>8</java.version>
 	</properties>
 	<dependencies>
