@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
+import com.harsh.sample.translateapi.model.TranslationRequest;
+import com.harsh.sample.translateapi.model.TranslationResponse;
 import com.google.cloud.translate.Translate.TranslateOption;
 
 @RestController
@@ -53,5 +55,19 @@ public class ApiController {
     	else {
     		return "Please provide the string in request.";
     	}
+    }
+
+    @RequestMapping(value="/translateText" , method = {RequestMethod.POST})
+    public TranslationResponse translateRequestText(@RequestBody TranslationRequest request){
+    	Translate translate = TranslateOptions.builder().apiKey("AIzaSyCom4bHxaPIyqD4K30S1cJVB5CJWxciGjM").build().service();
+
+		// Translates some text 
+		Translation translation = translate.translate(
+				request.getText(),
+				TranslateOption.sourceLanguage(request.getSourceLanguageCode()),
+				TranslateOption.targetLanguage(request.getTargetLangaugeCode())
+		);
+		
+		return new TranslationResponse(translation.translatedText());
     }
 }
