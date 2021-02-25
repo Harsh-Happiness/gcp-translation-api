@@ -31,7 +31,12 @@ public class ApiController {
 
 	Translate translate = null;
 	ApiController(){
-		translate = TranslateOptions.builder().apiKey("AIzaSyCom4bHxaPIyqD4K30S1cJVB5CJWxciGjM").build().service();
+		translate = TranslateOptions.builder().apiKey("AIzaSyBIc0lcZL4sRdJzkMvfcxTGvjvqcplMf20").build().service();
+	}
+
+	@RequestMapping(value="/" , method = {RequestMethod.GET})
+	public String welcome(){
+		return "this is home page";
 	}
     @RequestMapping(value="/convertText" , method = {RequestMethod.GET})
     public String getTranslateRequest(@RequestParam String text){
