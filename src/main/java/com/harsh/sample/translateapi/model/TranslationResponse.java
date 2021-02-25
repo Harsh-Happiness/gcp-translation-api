@@ -1,33 +1,39 @@
 package com.harsh.sample.translateapi.model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 public class TranslationResponse {
-	private String translatedText;
-	
 	private String status;
-	
 	private String errorInfo;
+	private Map<String,String> respTexts = new HashMap<>();
+	private String convertedLangCode;
+	private String prevLangCode;
 
-	public TranslationResponse(String errorInfo) {
-		super();
-		this.errorInfo = errorInfo;
-		this.status = "Error";
+	public TranslationResponse(String message) {
 	}
 
-	public TranslationResponse(String translatedText , String status) {
-		super();
-		this.translatedText = translatedText;
-		this.status = status;
-		this.errorInfo = errorInfo;
+	public TranslationResponse() {
 	}
 
-	public TranslationResponse() {}
-
-	public String getTranslatedText() {
-		return translatedText;
+	public String getConvertedLangCode() {
+		return convertedLangCode;
 	}
 
-	public void setTranslatedText(String translatedText) {
-		this.translatedText = translatedText;
+	public void setConvertedLangCode(String convertedLangCode) {
+		this.convertedLangCode = convertedLangCode;
+	}
+
+	public String getPrevLangCode() {
+		return prevLangCode;
+	}
+
+	public void setPrevLangCode(String prevLangCode) {
+		this.prevLangCode = prevLangCode;
 	}
 
 	public String getStatus() {
@@ -44,6 +50,16 @@ public class TranslationResponse {
 
 	public void setErrorInfo(String errorInfo) {
 		this.errorInfo = errorInfo;
+	}
+
+	@JsonAnySetter
+	public void addRespTexts(final String key, final String value){
+		this.respTexts.put(key, value);
+	}
+
+	@JsonAnyGetter
+	public Map<String, Object> getRespTexts() {
+		return Collections.unmodifiableMap(this.respTexts);
 	}
 
 }

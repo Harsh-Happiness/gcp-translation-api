@@ -1,8 +1,11 @@
 package com.harsh.sample.translateapi.controller;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,6 +22,7 @@ import com.google.cloud.translate.Translate.TranslateOption;
 
 @RestController
 public class ApiController {
+	private static Logger logger =LoggerFactory.getLogger(ApiController.class);
 
 	private static final String[] LANGUAGES = {
 		    "af", "sq", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "ny", "zh-TW", "hr",
@@ -30,52 +34,45 @@ public class ApiController {
 		  };
 
 	Translate translate = null;
+
 	ApiController(){
-		translate = TranslateOptions.builder().apiKey("AIzaSyBIc0lcZL4sRdJzkMvfcxTGvjvqcplMf20").build().service();
+		translate = TranslateOptions.builder().apiKey("AIzaSyDoWmPNu3z8EiPApQHjmWaoyhhTYKD9Yd8").build().service();
 	}
 
 	@RequestMapping(value="/" , method = {RequestMethod.GET})
 	public String welcome(){
-		return "this is home page";
+		return "This is translation page.";
 	}
-    @RequestMapping(value="/convertText" , method = {RequestMethod.GET})
-    public String getTranslateRequest(@RequestParam String text){
-    	if(text.length() > 0) {
-    	text = text.replace("\"", "");
-		Translation translation = translate.translate(
-				text,
-				TranslateOption.sourceLanguage("en"),
-				TranslateOption.targetLanguage("hi")
-		);
 
-		System.out.printf("Text: %s%n", text);
-		System.out.printf("Translation: %s%n", translation.translatedText());
-
-		return translation.translatedText();
-    	}
-    	else {
-    		return "Please provide the string in request.";
-    	}
-    }
 
     @RequestMapping(value="/translateText" , method = {RequestMethod.POST})
     public TranslationResponse translateRequestText(@RequestBody TranslationRequest request){
-
-    	Translation translation;
     	try {
     	Set<String> supportedLanguages = new HashSet<>();
         for (String language : LANGUAGES) {
           supportedLanguages.add(language);
         }
-    	if(supportedLanguages.contains(request.getSourceLanguageCode()) && supportedLanguages.contains(request.getTargetLangaugeCode())) {
-		// Translates some text
-    			translation = translate.translate(
-				request.getText(),
-				TranslateOption.sourceLanguage(request.getSourceLanguageCode()),
-				TranslateOption.targetLanguage(request.getTargetLangaugeCode())
-		);
+    	if(supportedLanguages.contains(request.getSourceLangCode())
+				&& supportedLanguages.contains(request.getTargetLangCode())) {
+			logger.info("Source language is : [{}] And Target Language is : [{}]", request.getSourceLangCode(), request.getTargetLangCode());
+    		TranslationResponse response = new TranslationResponse();
 
-    			return new TranslationResponse(translation.translatedText(),"Ok");
+			for(Map.Entry<String, String> entries : request.getExtra().entrySet() ) {
+				String txtToConvert = entries.getValue();
+				logger.info("key is : [{}]  and text to convert is : [{}]", entries.getKey() , txtToConvert);
+				Translation translation = translate.translate(
+						txtToConvert,
+						TranslateOption.sourceLanguage(request.getSourceLangCode()),
+						TranslateOption.targetLanguage(request.getTargetLangCode())
+				);
+
+				response.addRespTexts(entries.getKey(), translation.translatedText());
+			}
+
+			response.setPrevLangCode(request.getSourceLangCode());
+			response.setConvertedLangCode(request.getTargetLangCode());
+			response.setStatus("OK");
+			return response;
     	}
     	else {
     		throw new TranslationException("Invalid language codes entered");
@@ -86,4 +83,6 @@ public class ApiController {
     	}
 
     }
+
+//    TODO : web Client impl
 }

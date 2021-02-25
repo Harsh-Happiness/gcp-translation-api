@@ -1,42 +1,41 @@
 package com.harsh.sample.translateapi.model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 public class TranslationRequest {
 
-	private String text;
+	private String sourceLangCode;
+	private String targetLangCode;
+	private Map<String,String> langTexts = new HashMap<>();
 
-	private String sourceLanguageCode;
-	
-	private String targetLangaugeCode;
-
-	public TranslationRequest(String text, String sourceLanguageCode, String targetLangaugeCode) {
-		super();
-		this.text = text;
-		this.sourceLanguageCode = sourceLanguageCode;
-		this.targetLangaugeCode = targetLangaugeCode;
+	@JsonAnySetter
+	public void addExtra(final String key, final String value){
+		this.langTexts.put(key, value);
 	}
 
-	public String getText() {
-		return text;
+	@JsonAnyGetter
+	public Map<String, String> getExtra() {
+		return Collections.unmodifiableMap(this.langTexts);
 	}
 
-	public void setText(String text) {
-		this.text = text;
+	public String getSourceLangCode() {
+		return sourceLangCode;
 	}
 
-	public String getSourceLanguageCode() {
-		return sourceLanguageCode;
+	public void setSourceLangCode(String sourceLangCode) {
+		this.sourceLangCode = sourceLangCode;
 	}
 
-	public void setSourceLanguageCode(String sourceLanguageCode) {
-		this.sourceLanguageCode = sourceLanguageCode;
+	public String getTargetLangCode() {
+		return targetLangCode;
 	}
 
-	public String getTargetLangaugeCode() {
-		return targetLangaugeCode;
+	public void setTargetLangCode(String targetLangCode) {
+		this.targetLangCode = targetLangCode;
 	}
-
-	public void setTargetLangaugeCode(String targetLangaugeCode) {
-		this.targetLangaugeCode = targetLangaugeCode;
-	}
-
 }
