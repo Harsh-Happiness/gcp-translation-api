@@ -4,8 +4,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.net.HttpHeaders;
+import com.harsh.sample.translateapi.model.PDFRequest;
+import com.harsh.sample.translateapi.model.PDFResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,6 +23,7 @@ import com.harsh.sample.translateapi.execption.TranslationException;
 import com.harsh.sample.translateapi.model.TranslationRequest;
 import com.harsh.sample.translateapi.model.TranslationResponse;
 import com.google.cloud.translate.Translate.TranslateOption;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 public class ApiController {
@@ -84,5 +89,27 @@ public class ApiController {
 
     }
 
+    @RequestMapping(value = "/translatePDFText", method = {RequestMethod.POST})
+	public PDFResponse translatePDF(@RequestBody PDFRequest pdfRequest){
+		try{
+			final String uri = "http://34.66.172.0:8081/fetchTextFromFile";
+			RestTemplate restTemplate = new RestTemplate();
+
+		
+			PDFResponse pdfResponse = restTemplate.postForObject( uri, pdfRequest, PDFResponse.class);
+
+			Translation translation = translate.translate(
+					pdfResponse.getText(),
+					TranslateOption.sourceLanguage("en"),
+					TranslateOption.targetLanguage(pdfRequest.getTargetLangCode())
+			);
+			logger.info("text converted.");
+			return pdfResponse;
+		} catch( Exception e){
+			logger.error("Something went wrong. {}", e.getMessage());
+			e.printStackTrace();
+		}
+		return new PDFResponse("Something went wrong.");
+	}
 //    TODO : web Client impl
 }
